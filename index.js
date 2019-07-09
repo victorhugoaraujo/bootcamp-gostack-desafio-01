@@ -12,44 +12,61 @@ server.get('/projects', (req, res) => {
     return res.json(projects)
 })
 /**
- * Project detail
- */
-server.get('/projects/:index',(req, res) => {
-    const { index } = req.params;
-
-    return res.json(projects[index]);
-})
-
-/**
  * Create new project
  */
 server.post('/projects', (req, res) => {
-    const { title } = req.body
+    const { id, title } = req.body
 
-    projects.push(title)
+
+    const project = {
+        id,
+        title,
+        tasks: []
+    }
+
+    projects.push(project)
     
-    return res.json(projects)
+    return res.json(project)
 })
 
 /**
  * Update Project
  */
-server.put('/projects/:index', (req, res) => {
-    const  { index } = req.params;
+server.put('/projects/:id', (req, res) => {
+    const { id } = req.params;
     const { title } = req.body;
 
-    projects[index] = title;
+    const project = projects.find(p => p.id === id);
 
-    return res.json(projects)
+    project.title = title
+    return res.json(project)
 })
 
-server.delete('/projects/:index', (req, res) => {
-    const { index } = req.params;
+/**
+ * Delete a project
+ */
+server.delete('/projects/:id', (req, res) => {
+    const { id } = req.params;
+
+    const index = projects.find(p => p.id === id)
 
     projects.splice(index, 1);
 
-    return res.json(projects);
+    return res.send();
 });
+/**
+ * Create a task
+ */
 
+ server.post('/projects/:id/tasks', (req, res) => {
+     const { id } = req.params;
+     const { title } = req.body;
 
-server.listen(3000);
+     const project = projects.find(p => p.id === id)
+
+     project.tasks.push(title);
+
+     return res.json(project)
+ })
+
+server.listen(3000)
